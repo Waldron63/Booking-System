@@ -1,4 +1,4 @@
-package edu.co.bookingSystem.controller.health;
+package edu.co.bookingSystem.controller.user;
 
 import edu.co.bookingSystem.Exception.UserNotFoundException;
 import edu.co.bookingSystem.model.User;

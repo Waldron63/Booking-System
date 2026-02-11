@@ -1,6 +1,7 @@
 package edu.co.bookingSystem.service;
 
 import edu.co.bookingSystem.model.User;
+import edu.co.bookingSystem.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -8,40 +9,44 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final Map<String, User> users = new HashMap<>();
+    private final UserRepository userRepository;
+
+    public UserServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public User save(User user) {
         if (user.getId() == null || user.getId().isBlank()) {
             user.setId(UUID.randomUUID().toString());
         }
-
-        users.put(user.getId(), user);
-        return user;
+        return userRepository.save(user);
     }
 
     @Override
     public Optional<User> findById(String id) {
-        return Optional.ofNullable(users.get(id));
+        return userRepository.findById(id);
     }
 
     @Override
     public List<User> all() {
-        return new ArrayList<>(users.values());
+        return userRepository.findAll();
     }
 
     @Override
     public void deleteById(String id) {
-        users.remove(id);
+        if (!userRepository.existsById(id)) {
+            throw new NoSuchElementException("User not found with id: " + id);
+        }
+        userRepository.deleteById(id);
     }
 
     @Override
     public User update(User user, String userId) {
-        if (!users.containsKey(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new NoSuchElementException("User not found with id: " + userId);
         }
         user.setId(userId);
-        users.put(userId, user);
-        return user;
+        return userRepository.save(user);
     }
 }
